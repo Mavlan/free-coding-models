@@ -21,12 +21,16 @@
  *   📖 Continue: writes ~/.continue/config.yaml with provider: openai + apiBase
  *   📖 Cline: writes ~/.cline/globalState.json with openai-compatible provider config
  *   📖 ForgeCode: writes [[providers]] TOML block into ~/.forge/.forge.toml + sets [session] defaults
+ *   📖 FCM Router: built-in target with nothing to install or spawn; starts the daemon,
+ *     pushes the selected model + favorites as the `fast-coding` routing set and prints
+ *     the /v1 endpoint + model + key trio (issue #184)
  *
  * @functions
  *   → `resolveLauncherModelId` — choose the provider-specific id for a launch
  *   → `writeGooseConfig` — install provider + set GOOSE_PROVIDER/GOOSE_MODEL in config.yaml
  *   → `writeCrushConfig` — write provider + models.large/small to crush.json
  *   → `prepareExternalToolLaunch` — persist selected-model defaults and compute the launch command
+ *   → `startFcmRouterLaunch` — daemon lifecycle + routing-set push + connection instructions for fcm_router mode
  *   → `startExternalTool` — configure and launch the selected external tool mode
  *
  * @exports resolveLauncherModelId, buildToolEnv, prepareExternalToolLaunch, startExternalTool
@@ -1100,6 +1104,21 @@ export function prepareExternalToolLaunch(mode, model, config, options = {}) {
     }
   }
 
+  if (mode === 'fcm_router') {
+    // 📖 FCM Router is built into FCM: nothing to install and no external binary to
+    // 📖 spawn. Enter in this mode starts the daemon and routes the selected model
+    // 📖 through it (see startFcmRouterLaunch). Issue #184.
+    return {
+      command: null,
+      args: [],
+      env,
+      apiKey,
+      baseUrl,
+      meta,
+      configArtifacts: [],
+    }
+  }
+
   return {
     blocked: true,
     exitCode: 1,
@@ -1107,6 +1126,92 @@ export function prepareExternalToolLaunch(mode, model, config, options = {}) {
     meta,
     configArtifacts: [],
   }
+}
+
+// 📖 startFcmRouterLaunch: the "launch" flow for the FCM Router target in the Z cycle
+// 📖 (issue #184). The router ships inside FCM, so there is nothing to install and no
+// 📖 CLI to spawn. Instead: make sure the daemon is running, push the selected model
+// 📖 as primary with the user's favorites as failover into the active `fast-coding`
+// 📖 set, then print the endpoint + model + key trio any OpenAI-compatible tool needs.
+async function startFcmRouterLaunch(model, config) {
+  const meta = getToolMeta('fcm_router')
+  console.log(chalk.cyan(`  ▶ Configuring ${meta.label} with ${chalk.bold(model.label)}...`))
+
+  let status = null
+  try {
+    // 📖 Lazy import: router-daemon.js is large and only needed in this mode.
+    const { startRouterDaemonBackground } = await import('./router-daemon.js')
+    status = await startRouterDaemonBackground()
+  } catch (error) {
+    status = { ok: false, error: error instanceof Error ? error.message : String(error) }
+  }
+
+  if (!status?.ok) {
+    console.log(chalk.red(`  X Could not start the FCM Router daemon${status?.error ? `: ${status.error}` : '.'}`))
+    console.log(chalk.dim('  Run `free-coding-models --daemon` in another terminal to see the startup error.'))
+    console.log()
+    return 1
+  }
+
+  const routerBaseUrl = `http://localhost:${status.port}`
+
+  // 📖 Selected model first, favorites as failover. Mirrors syncFavoritesToRouter
+  // 📖 in the TUI but without the router.enabled gate: choosing the FCM Router
+  // 📖 target in the Z cycle IS the intent, no extra setting required.
+  const favorites = Array.isArray(config?.favorites) ? config.favorites : []
+  const selKey = `${model.providerKey}/${model.modelId}`
+  const chain = [selKey, ...favorites.filter((f) => f !== selKey)]
+  const routerModels = chain.map((key, index) => {
+    const slashIdx = key.indexOf('/')
+    return {
+      provider: slashIdx >= 0 ? key.slice(0, slashIdx) : '?',
+      model: slashIdx >= 0 ? key.slice(slashIdx + 1) : key,
+      priority: index + 1,
+    }
+  })
+
+  // 📖 POST creates-or-replaces the set (PUT alone 404s when the set is missing),
+  // 📖 then activate makes it the routing target. Best-effort: a failure here
+  // 📖 leaves the daemon on its default set, which still works, so we warn
+  // 📖 instead of failing the whole launch.
+  let setSynced = false
+  try {
+    const payload = JSON.stringify({ name: 'fast-coding', models: routerModels, created: new Date().toISOString() })
+    const createRes = await fetch(`${routerBaseUrl}/sets`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: payload,
+      signal: AbortSignal.timeout(5000),
+    })
+    if (createRes.ok || (await fetch(`${routerBaseUrl}/sets/fast-coding`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: payload,
+      signal: AbortSignal.timeout(5000),
+    })).ok) {
+      await fetch(`${routerBaseUrl}/sets/fast-coding/activate`, {
+        method: 'POST',
+        signal: AbortSignal.timeout(5000),
+      }).catch(() => {})
+      setSynced = true
+    }
+  } catch {}
+
+  console.log(chalk.green(`  ✓ FCM Router ${status.alreadyRunning ? 'is running' : 'started'} at ${chalk.bold(`${routerBaseUrl}/v1`)}`))
+  console.log()
+  console.log(chalk.bold('  Point any OpenAI-compatible coding tool at the router:'))
+  console.log(`    ${chalk.dim('Base URL:')} ${routerBaseUrl}/v1`)
+  console.log(`    ${chalk.dim('API key:')}  fcm-local${process.env.FCM_ROUTER_TOKEN ? ' (or your FCM_ROUTER_TOKEN value)' : ''}`)
+  console.log(`    ${chalk.dim('Model:')}    fcm`)
+  console.log()
+  if (setSynced) {
+    console.log(chalk.dim(`  📖 Routing chain: ${model.label} first${favorites.length > 0 ? `, ${favorites.length} favorite${favorites.length === 1 ? '' : 's'} as failover` : ''}.`))
+  } else {
+    console.log(chalk.yellow('  ⚠ Could not update the routing set; the daemon keeps its default set, which still works.'))
+  }
+  console.log(chalk.dim('  📖 Dashboard: `free-coding-models web`  ·  Docs: docs/router.md'))
+  console.log()
+  return 0
 }
 
 export async function startExternalTool(mode, model, config) {
@@ -1118,6 +1223,10 @@ export async function startExternalTool(mode, model, config) {
     console.log()
     return launchPlan.exitCode || 1
   }
+
+  // 📖 fcm_router has no binary to spawn: the helper starts the daemon, pushes
+  // 📖 the routing set and prints connection instructions instead. Issue #184.
+  if (mode === 'fcm_router') return startFcmRouterLaunch(model, config)
 
   console.log(chalk.cyan(`  ▶ Launching ${meta.label} with ${chalk.bold(model.label)}...`))
   printConfigArtifacts(meta.label, launchPlan.configArtifacts)
