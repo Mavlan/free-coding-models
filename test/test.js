@@ -3304,11 +3304,11 @@ describe('router daemon integration hardening', () => {
       body: { id: 'chatcmpl-mistral', choices: [{ message: { role: 'assistant', content: 'ok' } }] },
     }), async (mistralProvider) => {
       await withSourceUrls({ mistral: mistralProvider.url }, async () => {
-        // 📖 'mistral-large-2512' is a real catalog model — the router only
+        // 📖 'mistral-large-3-25-12' is a real catalog model — the router only
         // 📖 routes to models it can find in sources.js (anything else is
         // 📖 marked stale by definition and never picked).
         const config = buildRouterTestConfig([
-          { provider: 'mistral', model: 'mistral-large-2512', priority: 1 },
+          { provider: 'mistral', model: 'mistral-large-3-25-12', priority: 1 },
         ], { maxRetries: 1 })
         config.apiKeys.mistral = 'mistral-test-key'
         await withRouterTestServer(config, async ({ baseUrl }) => {
@@ -3412,7 +3412,7 @@ describe('router daemon integration hardening', () => {
           await withSourceUrls({ nvidia: nvidiaProvider.url, groq: groqProvider.url, cerebras: cerebrasProvider.url }, async () => {
             const config = buildRouterTestConfig([
               { provider: 'nvidia', model: 'openai/gpt-oss-20b', priority: 1 },
-              { provider: 'groq', model: 'qwen/qwen3.6-27b', priority: 2 },
+              { provider: 'groq', model: 'qwen/qwen3.8-27b', priority: 2 },
               { provider: 'cerebras', model: 'gpt-oss-120b', priority: 3 },
             ])
             config.apiKeys.cerebras = 'cb-router-test'
@@ -3447,7 +3447,7 @@ describe('router daemon integration hardening', () => {
           await withSourceUrls({ nvidia: nvidiaProvider.url, groq: groqProvider.url, cerebras: cerebrasProvider.url }, async () => {
             const config = buildRouterTestConfig([
               { provider: 'nvidia', model: 'openai/gpt-oss-20b', priority: 1 },
-              { provider: 'groq', model: 'qwen/qwen3.6-27b', priority: 2 },
+              { provider: 'groq', model: 'qwen/qwen3.8-27b', priority: 2 },
               { provider: 'cerebras', model: 'gpt-oss-120b', priority: 3 },
             ], { familyFailover: false })
             config.apiKeys.cerebras = 'cb-router-test'
@@ -3456,13 +3456,13 @@ describe('router daemon integration hardening', () => {
               const payload = await response.json()
 
               assert.equal(response.status, 200)
-              assert.equal(response.headers.get('x-fcm-router-model'), 'groq/qwen/qwen3.6-27b', 'must follow plain set order (priority 2)')
+              assert.equal(response.headers.get('x-fcm-router-model'), 'groq/qwen/qwen3.8-27b', 'must follow plain set order (priority 2)')
               assert.equal(payload.id, 'chatcmpl-set-order')
               assert.equal(nvidiaProvider.requests.length, 1)
               assert.equal(groqProvider.requests.length, 1)
               assert.equal(cerebrasProvider.requests.length, 0)
 
-              const servedEntry = runtime.requestLog.find((entry) => entry.model === 'groq/qwen/qwen3.6-27b')
+              const servedEntry = runtime.requestLog.find((entry) => entry.model === 'groq/qwen/qwen3.8-27b')
               assert.ok(servedEntry, 'served attempt must appear in the request log')
               assert.equal(servedEntry.failover, true)
               assert.equal(servedEntry.failover_reason, 'set_order', 'request log must expose the set-order reason')
