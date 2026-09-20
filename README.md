@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>Find the fastest free coding model in seconds.</strong><br>
-  Live latency, stability and verdicts for 228 models from 24 free AI providers, then install the one you pick straight into your favorite coding tool.<br><br>
+  Live latency, stability and verdicts for 251 models from 24 free AI providers, then install the one you pick straight into your favorite coding tool.<br><br>
   <strong>Works with:</strong> OpenCode CLI / Desktop / WebUI, OpenClaw, Crush, Goose, Aider, Kilo CLI, Qwen Code, OpenHands, Amp, Hermes, Continue, Cline, Xcode, Pi, ZCode, ForgeCode, Copilot, jcode, Caveman Code and more.
 </p>
 
@@ -35,7 +35,7 @@ free-coding-models
 
 ## 💡 Why this tool?
 
-There is a large catalog of free and free-limited coding models (**24 providers / 228 live models**, generated from [`sources.js`](./sources.js)). Which one is fastest *right now*? Which one is actually stable, versus just lucky on the last ping?
+There is a large catalog of free and free-limited coding models (**24 providers / 251 live models**, generated from [`sources.js`](./sources.js)). Which one is fastest *right now*? Which one is actually stable, versus just lucky on the last ping?
 
 `free-coding-models` (FCM) answers that by pinging every model in parallel, showing live latency, and computing a **live Stability Score (0-100)** combining p95 latency, jitter, spike rate and uptime. Average latency alone is misleading: a model that randomly spikes to 6 seconds is not reliable.
 
@@ -87,18 +87,20 @@ free-coding-models --fiable              # print the single most reliable model 
 
 ## 🟢 Providers
 
-**24 active providers / 228 live models**, sorted by live model count. Top 8:
+**24 active providers / 251 live models**, sorted by live model count. Top 8:
 
 | Provider | Models | Best tier | Env var |
 |----------|--------|-----------|---------|
-| [Alibaba DashScope](https://modelstudio.console.alibabacloud.com) | 27 | S+ | `DASHSCOPE_API_KEY` |
-| [Ollama Cloud](https://ollama.com/settings/keys) | 19 | S+ | `OLLAMA_API_KEY` |
-| [OpenRouter](https://openrouter.ai/keys) | 19 | S+ | `OPENROUTER_API_KEY` |
-| [Cloudflare AI](https://dash.cloudflare.com) | 15 | S | `CLOUDFLARE_API_TOKEN` |
-| [Kilo](https://kilo.ai) | 14 | S+ | `KILO_API_KEY` |
-| [NVIDIA NIM](https://build.nvidia.com) | 13 | S+ | `NVIDIA_API_KEY` |
+| [Alibaba DashScope](https://modelstudio.console.alibabacloud.com) | 25 | S+ | `DASHSCOPE_API_KEY` |
+| [Cloudflare AI](https://dash.cloudflare.com) | 21 | S+ | `CLOUDFLARE_API_TOKEN` |
+| [Ollama Cloud](https://ollama.com/settings/keys) | 20 | S+ | `OLLAMA_API_KEY` |
+| [OpenRouter](https://openrouter.ai/keys) | 20 | S+ | `OPENROUTER_API_KEY` |
+| [Kilo](https://kilo.ai) | 18 | S+ | `KILO_API_KEY` |
+| [NVIDIA NIM](https://build.nvidia.com) | 16 | S+ | `NVIDIA_API_KEY` |
+| [OVHcloud AI](https://endpoints.ai.cloud.ovh.net) | 13 | S+ | `OVH_AI_ENDPOINTS_ACCESS_TOKEN` |
 | [Pollinations AI](https://enter.pollinations.ai) | 13 | S+ | `POLLINATIONS_API_KEY` |
-| [OVHcloud AI](https://endpoints.ai.cloud.ovh.net) | 12 | S+ | `OVH_AI_ENDPOINTS_ACCESS_TOKEN` |
+
+> 🧾 **What "free" means here:** free is a property of the *(provider, model)* pair, never of the provider as a whole. A row is listed only when that exact model id costs $0 to call through that provider (permanent free tier, `:free` variant, or free plan), verified live at audit time. The same open-weights model can be free on one host and paid on another - paid siblings are deliberately excluded. Full breakdown and badge legend: [`docs/providers.md`](./docs/providers.md).
 
 > 📖 **Full table, free-tier limits, env vars, tier scale and provider notes:** [`docs/providers.md`](./docs/providers.md) (generated from `sources.js` by `node scripts/generate-provider-table.mjs`, so counts cannot drift). OpenCode Zen's free models are listed there too.
 
@@ -247,7 +249,7 @@ Keys live locally in `~/.free-coding-models.json` (`0600`) and are only ever sen
 
 ## Contributors
 
-Created and maintained by [Vanessa Depraute](https://vanessadepraute.dev) ([@vava-nessa](https://github.com/vava-nessa)), with contributions from [@erwinh22](https://github.com/erwinh22), [@whit3rabbit](https://github.com/whit3rabbit), [@skylaweber](https://github.com/skylaweber), [@PhucTruong-ctrl](https://github.com/PhucTruong-ctrl), [@chindris-mihai-alexandru](https://github.com/chindris-mihai-alexandru), [@serajbaltu](https://github.com/serajbaltu), [@stgreenb](https://github.com/stgreenb), [@MoriDanWork](https://github.com/MoriDanWork), [@fan92rus](https://github.com/fan92rus), [@Muhammad95959](https://github.com/Muhammad95959), [@FaintFlower](https://github.com/FaintFlower), [@lehneres](https://github.com/lehneres), [@ia-S-on](https://github.com/ia-S-on) and [@bangla24bdrang-lab](https://github.com/bangla24bdrang-lab).
+Created and maintained by [Vanessa Depraute](https://vanessadepraute.dev) ([@vava-nessa](https://github.com/vava-nessa)), with contributions from [@erwinh22](https://github.com/erwinh22), [@whit3rabbit](https://github.com/whit3rabbit), [@skylaweber](https://github.com/skylaweber), [@PhucTruong-ctrl](https://github.com/PhucTruong-ctrl), [@chindris-mihai-alexandru](https://github.com/chindris-mihai-alexandru), [@serajbaltu](https://github.com/serajbaltu), [@stgreenb](https://github.com/stgreenb), [@MoriDanWork](https://github.com/MoriDanWork), [@fan92rus](https://github.com/fan92rus), [@Muhammad95959](https://github.com/Muhammad95959), [@FaintFlower](https://github.com/FaintFlower), [@lehneres](https://github.com/lehneres), [@ia-S-on](https://github.com/ia-S-on), [@bangla24bdrang-lab](https://github.com/bangla24bdrang-lab) and [@Sy57em1](https://github.com/Sy57em1).
 
 → Full credits and highlighted contributions: [`CONTRIBUTORS.md`](./CONTRIBUTORS.md)
 

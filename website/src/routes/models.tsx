@@ -507,6 +507,13 @@ function ModelsPage() {
               Click any column to sort · Click again to reverse · ⎘ copies the CLI snippet
             </span>
           </div>
+          <div className="border-t border-border bg-bg/40 px-3 py-1.5 font-mono text-[10px] leading-relaxed text-fg-faint">
+            <span className="text-[#7ed957]">Free</span> = recurring $0 tier ·{' '}
+            <span className="text-[#e8c547]">Limited</span> = depleting free allowance ·{' '}
+            <span className="text-[#5bb8ff]">Metered</span> = passthrough, $0-priced models only. A model
+            is listed only when it costs $0 through that specific provider (verified live); the same
+            model can be paid elsewhere, and each provider's paid models are excluded.
+          </div>
         </div>
 
         {/* ── Mobile cards (visible only on small screens) ─────────────── */}
@@ -649,6 +656,7 @@ function Row({ row, rank, medal }: { row: CatalogRow; rank: number; medal: 'gold
         <div className="flex flex-col gap-0.5">
           <span
             className={`inline-flex w-fit items-center rounded border px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider ${quota.text} ${quota.bg} ${quota.border}`}
+            title={quotaTooltip(row.providerQuotaCode)}
           >
             {quotaLabel(row.providerQuotaCode)}
           </span>
@@ -732,6 +740,7 @@ function MobileCard({ row, rank }: { row: CatalogRow; rank: number }) {
       <div className="mt-2 flex items-center gap-1.5">
         <span
           className={`rounded border px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider ${quota.text} ${quota.bg} ${quota.border}`}
+          title={quotaTooltip(row.providerQuotaCode)}
         >
           {quotaLabel(row.providerQuotaCode)}
         </span>
@@ -772,5 +781,16 @@ function quotaLabel(code: QuotaCode): string {
       return 'Limited'
     case 'metered':
       return 'Metered'
+  }
+}
+
+function quotaTooltip(code: QuotaCode): string {
+  switch (code) {
+    case 'free':
+      return 'Free · recurring $0 access through this provider (rate-limited, never runs out)'
+    case 'limited':
+      return 'Limited · free allowance that depletes (credits, daily caps, expiring tokens)'
+    case 'metered':
+      return 'Metered · pay-per-token gateway; only explicitly $0-priced models are listed'
   }
 }
