@@ -56,7 +56,7 @@ import {
 
 const TEST_MODELS = Object.freeze({
   groq: 'openai/gpt-oss-120b',
-  nvidia: 'deepseek-ai/deepseek-v4-flash-0731',
+  nvidia: 'moonshotai/kimi-k3',
 })
 
 // ─── Harness (mirrors the v1 router test harness) ───────────────────────────

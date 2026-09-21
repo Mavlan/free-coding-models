@@ -434,7 +434,7 @@ describe('router daemon mid-stream zero-chunk failover', () => {
         await withSourceUrls({ groq: groqProvider.url, nvidia: nvidiaProvider.url }, async () => {
           const config = buildRouterTestConfig([
             { provider: 'groq', model: 'openai/gpt-oss-120b', priority: 1 },
-            { provider: 'nvidia', model: 'deepseek-ai/deepseek-v4-flash-0731', priority: 2 },
+            { provider: 'nvidia', model: 'moonshotai/kimi-k3', priority: 2 },
           ])
           await withRouterTestServer(config, async ({ baseUrl }) => {
             const response = await fetch(`${baseUrl}/v1/chat/completions`, {
@@ -445,7 +445,7 @@ describe('router daemon mid-stream zero-chunk failover', () => {
             const text = await response.text()
 
             assert.equal(response.status, 200)
-            assert.equal(response.headers.get('x-fcm-router-model'), 'nvidia/deepseek-ai/deepseek-v4-flash-0731', 'client must be served by the fallback provider')
+            assert.equal(response.headers.get('x-fcm-router-model'), 'nvidia/moonshotai/kimi-k3', 'client must be served by the fallback provider')
             assert.match(text, /fallback-ok/, 'client must receive the fallback completion')
             assert.equal(groqProvider.requests.length, 1, 'dead upstream was attempted once')
             assert.equal(nvidiaProvider.requests.length, 1, 'fallback provider served the request')
@@ -562,14 +562,14 @@ describe('endpoint-installer secret files', () => {
 
       const result = installProviderEndpoints(config, 'nvidia', 'aider', {
         scope: 'selected',
-        modelIds: ['deepseek-ai/deepseek-v4-flash-0731'],
+        modelIds: ['moonshotai/kimi-k3'],
         paths: { aiderConfigPath },
         track: false, // 📖 Keep the test hermetic: no config tracking, no real writes.
       })
 
       assert.equal(result.modelCount, 1)
       const written = readFileSync(aiderConfigPath, 'utf8')
-      assert.match(written, /model: openai\/deepseek-ai\/deepseek-v4-flash-0731/)
+      assert.match(written, /model: openai\/moonshotai\/kimi-k3/)
       assert.match(written, /openai-api-key: nvapi-secret/)
       assert.equal(statSync(aiderConfigPath).mode & 0o777, 0o600, 'config carries a plaintext key: must be 0600')
     } finally {

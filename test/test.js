@@ -151,7 +151,7 @@ function mockResult(overrides = {}) {
 const ROUTER_TEST_MODELS = Object.freeze({
   groqFast: 'openai/gpt-oss-120b',
   groqBackup: 'openai/gpt-oss-120b',
-  nvidiaFast: 'deepseek-ai/deepseek-v4-flash-0731',
+  nvidiaFast: 'moonshotai/kimi-k3',
 })
 
 function listenOnRandomPort(server) {
@@ -1087,9 +1087,9 @@ describe('provider key test model discovery', () => {
 
   it('uses discovered repo-known ids before the static catalog head for NVIDIA', () => {
     assert.deepEqual(
-      listProviderTestModels('nvidia', sources.nvidia, ['openai/gpt-oss-120b', 'deepseek-ai/deepseek-v4-flash-0731']).slice(0, 5),
+      listProviderTestModels('nvidia', sources.nvidia, ['openai/gpt-oss-120b', 'moonshotai/kimi-k3']).slice(0, 5),
       [
-        'deepseek-ai/deepseek-v4-flash-0731',
+        'moonshotai/kimi-k3',
         'openai/gpt-oss-120b',
         'nvidia/nemotron-3-ultra-550b-a55b',
         'poolside/laguna-xs-2.1',
@@ -5134,7 +5134,7 @@ describe('endpoint installer', () => {
       const expectedApiKey = getApiKey(config, 'nvidia')
       const result = installProviderEndpoints(config, 'nvidia', 'opencode-desktop', {
         scope: 'selected',
-        modelIds: ['deepseek-ai/deepseek-v4-flash-0731'],
+        modelIds: ['moonshotai/kimi-k3'],
         paths,
       })
 
@@ -5143,7 +5143,7 @@ describe('endpoint installer', () => {
       assert.equal(result.modelCount, 1)
       assert.equal(written.provider['fcm-nvidia'].options.apiKey, expectedApiKey)
       assert.deepEqual(written.provider['fcm-nvidia'].models, {
-        'deepseek-ai/deepseek-v4-flash-0731': { name: 'DeepSeek V4 Flash' },
+        'moonshotai/kimi-k3': { name: 'Kimi K3' },
       })
       assert.deepEqual(config.endpointInstalls.map((entry) => ({
         providerKey: entry.providerKey,
@@ -5155,7 +5155,7 @@ describe('endpoint installer', () => {
           providerKey: 'nvidia',
           toolMode: 'opencode',
           scope: 'selected',
-          modelIds: ['deepseek-ai/deepseek-v4-flash-0731'],
+          modelIds: ['moonshotai/kimi-k3'],
         },
       ])
     } finally {
