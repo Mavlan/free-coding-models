@@ -282,8 +282,7 @@ export const googleai = [
   // Removed (2026-09-21): gemini-3.1-pro-preview re-removed — the 2026-09-15 re-add resurrected a paid-only model (free tier "Not available" on the official pricing page since ~April 2026); best free alternative: gemini-3.5-flash
   // Removed (2026-09-05): gemini-2.0-flash — not listed on the official pricing page (PR #178 addition reverted)
   // ⚠️ Gemini 2.5 family retires no earlier than 2026-10-16 per Google deprecation policy
-  ['gemma-4-31b-it', 'Gemma 4 31B', 'A+', '52.0%', '256k'], // Added (2026-09-21) — new in the free tier per official docs
-  ['gemma-4-26b-a4b-it', 'Gemma 4 26B MoE', 'A', '38.0%', '256k'], // Added (2026-09-21) — new in the free tier per official docs
+  // Removed (2026-09-21): gemma-4-31b-it + gemma-4-26b-a4b-it (Gemma 4 entries) — Gemma pages are gone from ai.google.dev (404 on /gemini-api/docs/models/gemma), Gemma is no longer served via the Gemini API free tier; the free Gemma route is now NVIDIA NIM
 ]
 
 // 📖 ZAI source - https://open.z.ai
@@ -402,7 +401,7 @@ export const ovhcloud = [
   ['Qwen3.5-397B-A17B',                         'Qwen3.5 397B MoE',    'S+',  '76.2%',     '262k'],
   ['Qwen3.6-27B',                               'Qwen3.6 27B',         'S+',  '77.2%',     '262k'],
   // Removed (2026-07-27): Qwen3-Coder-30B-A3B-Instruct (Qwen3 Coder 30B MoE) — no longer in catalog
-  ['Qwen3-Coder-30B-A3B-Instruct', 'Qwen3 Coder 30B A3B', 'A+', '51.6%', '262k'], // Re-added (2026-09-21) — back in the official AI Endpoints catalog
+  // Removed (2026-09-21): Qwen3-Coder-30B-A3B-Instruct (Qwen3 Coder 30B A3B) — absent from the official AI Endpoints catalog page (20 models, no coder model); the 2026-09-21 morning re-add was erroneous
   ['gpt-oss-120b',                              'GPT OSS 120B',         'S',  '62.4%', '131k'],
   ['gpt-oss-20b',                               'GPT OSS 20B',          'A+',  '50.3%', '131k'],
   ['Meta-Llama-3_3-70B-Instruct',               'Llama 3.3 70B',        'B', '22.0%', '131k'],
@@ -410,9 +409,7 @@ export const ovhcloud = [
   // Removed (2026-08-13): Mistral-Small-3.2-24B-Instruct-2506 (Mistral Small 3.2) — no longer in OVHcloud public catalog (endpoint still reachable but not listed)
   // Removed (2026-07-27): Mistral-7B-Instruct-v0.3 (Mistral 7B Instruct) — no longer in catalog
   // Removed (2026-08-13): Mistral-Nemo-Instruct-2407 (Mistral Nemo) — no longer in OVHcloud public catalog
-  ['Mistral-Small-3.2-24B-Instruct-2506', 'Mistral Small 3.2 24B', 'S', '69.4%', '131k'], // Re-added (2026-09-21) — back in the official catalog (Mistral's self-reported 69.4% SWE-bench Verified)
-  ['Mistral-Nemo-Instruct-2407', 'Mistral Nemo 12B', 'B', '-', '65k'], // Re-added (2026-09-21) — back in the official catalog
-  ['Mistral-7B-Instruct-v0.3', 'Mistral 7B v0.3', 'C', '-', '65k'], // Re-added (2026-09-21) — back in the official catalog
+  // Removed (2026-09-21): Mistral-Small-3.2-24B-Instruct-2506 + Mistral-Nemo-Instruct-2407 + Mistral-7B-Instruct-v0.3 re-removed — none of the three Mistral models appear on the official AI Endpoints catalog page; the 2026-09-21 morning re-adds were erroneous
   ['Qwen3.5-9B',                                'Qwen3.5 9B',           'B+', '30.0%', '262k'],
   ['Qwen2.5-VL-72B-Instruct', 'Qwen2.5-VL 72B', 'S', '-', '32k'], // Added (2026-08-13)
   // ── Embeddings ──
@@ -444,6 +441,7 @@ export const opencodeZen = [
   ['ling-3.0-flash-fin-free', 'Ling 3.0 Flash Fin Free', 'B+', '-', '262k'], // Added (2026-09-05) — new id in live /v1/models (was ling-3.0-flash-free)
   ['muse-spark-1.2-contributor-free', 'Muse Spark 1.2 Contributor Free', 'A+', '-', '1M'],
   ['muse-spark-1.3-contributor-free', 'Muse Spark 1.3 Contributor Free', 'S+', '-', '1M'],
+  ['jev-1.13-free', 'Jev 1.13 Free', 'B+', '-', '200k'], // Added (2026-09-21) — new free model on the live Zen /v1/models list (74 models checked)
 ]
 
 // 📖 Kilo source - https://api.kilo.ai/api/gateway
@@ -546,6 +544,9 @@ export const novita = [
 // 📖 anonymous path only reaches the default model via GET /text. Daily Pollen grants per tier renew free.
 // 📖 Verified live 2026-09-21 via GET /v1/models (411 models): the old short ids (openai, deepseek, kimi,
 // 📖 laguna...) are no longer primary ids but still resolve as aliases of the canonical namespaced models.
+// 📖 Note (2026-09-21): the anonymous tier (text.pollinations.ai/models) now lists ONLY openai-fast;
+// 📖 the models below need the free API key + Pollen credits (gen.pollinations.ai). Re-check the Pollen
+// 📖 free-grant policy at next audit: if grants stop covering these models, this list must shrink to openai-fast.
 export const pollinations = [
   // ── S+ tier — SWE-bench Verified ≥70% ──
   ['laguna', 'Laguna S 2.1', 'S+', '-', '1M'], // Fixed (2026-09-21): alias now resolves to poolside/laguna-s-2.1 (Laguna S 2.1), was Laguna XS.2; score cleared (S 2.1 has no published SWE-bench Verified)
@@ -584,14 +585,12 @@ export const pollinations = [
 // 📖 and still reachable with free-tier rate limits (1000 RPM). Keep only the chat text models here.
 export const siliconflow = [
   // ── A tier — SWE-bench Verified 40–50% ──
-  ['THUDM/GLM-Z1-9B-0414', 'GLM-Z1 9B', 'A', '-', '131k'], // Fixed (2026-09-21): deleted the false 2026-09-15 "ctx to 32k" comment; official context_length is 131072 so the value stays 131k
+  // Removed (2026-09-21): THUDM/GLM-Z1-9B-0414 + THUDM/GLM-4-9B-0414 — deprecated 2026-03-12 per official release notes, service terminated
   ['deepseek-ai/DeepSeek-R1-0528-Qwen3-8B', 'DeepSeek R1 0528 Qwen3 8B', 'A', '-', '131k'],
   // ── B+ tier ──
-  ['Qwen/Qwen3-8B', 'Qwen3 8B', 'B+', '30.0%', '131k'],
+  // Removed (2026-09-21): Qwen/Qwen3-8B ($0.06/M) + Qwen/Qwen2.5-7B-Instruct ($0.05/M) — no longer free, both now paid on the official model pages; replacement: Qwen/Qwen3.5-4B
   // Removed (2026-09-05): deepseek-ai/DeepSeek-R1-Distill-Qwen-7B (DeepSeek R1 Distill Qwen 7B) - No longer listed on SiliconFlow pricing/catalog page (0 of 184 model records); superseded by the newer R1-0528 Qwen3 distill
   ['Qwen/Qwen3.5-4B', 'Qwen3.5 4B', 'A-', '-', '262k'],
-  ['THUDM/GLM-4-9B-0414', 'GLM-4 9B', 'B+', '-', '32k'],
-  ['Qwen/Qwen2.5-7B-Instruct', 'Qwen2.5 7B Instruct', 'B', '-', '32k'],
   ['XingChenAGI/Xing4.0-29B', 'Xing4.0 29B', 'A-', '-', '262k'], // Added (2026-09-21) — new $0 model on the official pricing page (181 records checked); engineering/coding focused
   // Removed (2026-09-21): Qwen/Qwen2.5-Coder-7B-Instruct (Qwen2.5 Coder 7B Instruct) — taken offline by SiliconFlow (official release note 2026-03-10, effective 2026-03-17; 0 of 181 records on today's pricing page); the 2026-09-15 re-add was erroneous. Replacement: Qwen/Qwen3-8B
 ]
